@@ -23,7 +23,6 @@ module JqueryQueryBuilder
       result = object
       fields.each do |field|
         result = result[field]
-        result = result.first if result.is_a? Array
         break if result.nil?
       end
       if result.is_a? Array
