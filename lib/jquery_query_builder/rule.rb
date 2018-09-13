@@ -1,16 +1,25 @@
 module JqueryQueryBuilder
   class Rule
-    attr_accessor :id, :field, :type, :input, :operator, :value
-    def initialize(rule_hash)
+    attr_accessor :id, :field, :type, :input, :operator, :value, :opts
+    def initialize(rule_hash, opts = {})
       self.id = rule_hash['id']
       self.field = rule_hash['field']
       self.type = rule_hash['type']
       self.input = rule_hash['input']
       self.operator = rule_hash['operator']
       self.value = rule_hash['value']
+      self.opts = opts.to_h.with_indifferent_access
+      @custom_evaluators = opts[:custom_evaluators]
     end
 
     def evaluate(object)
+      if @custom_evaluators.present?
+        custom_evaluator = @custom_evaluators.call(self)
+        if custom_evaluator.present?
+          return custom_evaluator.evaluate(object)
+        end
+      end
+
       get_operator.evaluate(get_input(object), get_value)
     end
 

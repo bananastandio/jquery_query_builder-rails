@@ -8,22 +8,24 @@ require 'json'
 
 module JqueryQueryBuilder
   class Evaluator
-    attr_accessor :parsed_rule_set
-    def initialize(rule_set)
+    attr_accessor :parsed_rule_set, :opts
+    def initialize(rule_set, opts = {})
       if rule_set.is_a? String
         #assuming the json was passed in
         self.parsed_rule_set = JSON.parse(rule_set)
       else
         self.parsed_rule_set = rule_set
       end
+
+      self.opts = opts
     end
 
     def get_matching_objects(objects)
-      objects.select{|o| object_matches_rules?(o)}
+      objects.select{|o| object_matches_rules?(o) }
     end
 
     def object_matches_rules?(object)
-      RuleGroup.new(parsed_rule_set).evaluate(object)
+      RuleGroup.new(parsed_rule_set, opts).evaluate(object)
     end
   end
 end
